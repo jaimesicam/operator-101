@@ -1,0 +1,14 @@
+apiVersion: web.example.com/v1alpha1
+kind: PhpApp
+metadata:
+  name: shop
+spec:
+  secretName: shop-secrets        # a Secret the user creates; every key becomes an env var
+  code: |
+    <?php
+    echo "<h1>" . htmlspecialchars(getenv("GREETING")) . "</h1>";
+    echo "<p>Cooked by " . gethostname() . "</p>";
+  php:
+    replicas: 2                   # image defaults to php:8.3-fpm
+  nginx:
+    replicas: 1                   # image defaults to nginx:stable

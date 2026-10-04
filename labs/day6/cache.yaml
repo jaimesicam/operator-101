@@ -1,0 +1,7 @@
+apiVersion: web.example.com/v1alpha1
+kind: KVCluster
+metadata:
+  name: cache
+spec:
+  replicas: 3        # 1 primary + 2 replicas
+  storage: 1Gi       # disk per member

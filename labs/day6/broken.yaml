@@ -1,0 +1,7 @@
+apiVersion: web.example.com/v1alpha1
+kind: KVCluster
+metadata:
+  name: broken
+spec:
+  replicas: 1
+  storageClassName: does-not-exist

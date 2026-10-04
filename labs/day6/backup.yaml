@@ -1,0 +1,6 @@
+apiVersion: web.example.com/v1alpha1
+kind: KVBackup
+metadata:
+  name: cache-backup-1
+spec:
+  cluster: cache

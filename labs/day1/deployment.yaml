@@ -1,0 +1,28 @@
+apiVersion: apps/v1               # Deployments live in the "apps" API group
+kind: Deployment
+metadata:
+  name: hello-site
+  labels:
+    app: hello-site               # a sticker on the Deployment itself
+spec:
+  replicas: 2                     # THE PROMISE: 2 copies, always
+  selector:
+    matchLabels:
+      app: hello-site             # "the Pods I own wear this sticker"
+  template:                       # the cookie cutter for each Pod
+    metadata:
+      labels:
+        app: hello-site           # every new Pod gets this sticker
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:stable       # the sealed food pack to run
+        ports:
+        - containerPort: 80       # nginx listens here
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html   # where nginx looks for pages
+      volumes:
+      - name: html
+        configMap:
+          name: hello-site        # put the note card's files here

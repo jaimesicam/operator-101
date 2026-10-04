@@ -1,0 +1,12 @@
+# Projects rebuilt by reference/site-operator/setup.sh, or your own scaffold
+site-operator-build/
+site-operator/
+!reference/site-operator/
+
+# Go and editor leftovers
+bin/
+cover.out
+*.test
+.idea/
+.vscode/
+.DS_Store

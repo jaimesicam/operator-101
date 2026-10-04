@@ -1,0 +1,54 @@
+# Part 1 + Part 2 of Day 6: Valkey on a StatefulSet, with kv-0 as primary.
+apiVersion: v1
+kind: Service
+metadata:
+  name: kv-headless
+spec:
+  clusterIP: None                  # headless: one DNS name per Pod, no shared address
+  publishNotReadyAddresses: true   # members can find each other before they're Ready
+  selector:
+    app: kv
+  ports:
+  - name: valkey
+    port: 6379
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kv
+spec:
+  serviceName: kv-headless         # gives Pods names like kv-0.kv-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kv
+  template:
+    metadata:
+      labels:
+        app: kv
+    spec:
+      containers:
+      - name: valkey
+        image: valkey/valkey:8.0
+        # Part 1 used: args: ["valkey-server", "--appendonly", "yes", "--dir", "/data"]
+        command: ["sh", "-c"]
+        args:
+        - |
+          ORDINAL=${HOSTNAME##*-}            # "kv-2" -> "2"
+          if [ "$ORDINAL" = "0" ]; then
+            exec valkey-server --appendonly yes --dir /data
+          fi
+          exec valkey-server --appendonly yes --dir /data --replicaof kv-0.kv-headless 6379
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: data
+          mountPath: /data         # Valkey saves its data here
+  volumeClaimTemplates:            # one locker request per Pod
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
